@@ -1,2 +1,52 @@
 # Fantasy-Football
 Im winning this year
+
+##Current Rankings:  
+  
+Quarterback Predictions:  
+Lamar Jackson: 22.744657613189936 PPG  
+Brock Purdy: 20.78429318533256 PPG  
+Baker Mayfield: 20.15287116447184 PPG  
+Russell Wilson: 19.70110706296614 PPG  
+Patrick Mahomes: 19.54725195237524 PPG  
+Geno Smith: 18.62198092007396 PPG   
+Bo Nix: 18.344226790907772 PPG  
+Sam Darnold: 18.283093361685353 PPG  
+Justin Herbert: 18.18443269215447 PPG  
+Joe Burrow: 18.16459339917716 PPG  
+  
+Running Back Predictions:  
+Josh Jacobs: 18.145457958450912 PPG  
+Derrick Henry: 16.8259462083944 PPG  
+De'Von Achane: 16.5272778003211 PPG  
+Jonathan Taylor: 16.526974183749015 PPG  
+Kareem Hunt: 16.478521692161664 PPG  
+Kyren Williams: 16.316377617167994 PPG  
+Kenneth Walker III: 16.09760131773686 PPG  
+Alvin Kamara: 16.06935072235236 PPG  
+Saquon Barkley: 16.037252935484624 PPG  
+Chuba Hubbard: 15.107567728225233 PPG  
+  
+Tight End Predictions:  
+George Kittle: 12.19271035349706 PPG  
+Mark Andrews: 10.859937834081201 PPG  
+Trey McBride: 9.481127986410389 PPG  
+David Njoku: 9.089414421369263 PPG  
+Jonnu Smith: 9.033437184799418 PPG  
+Chigoziem Okonkwo: 9.009324621454198 PPG  
+Tyler Higbee: 8.864440722606016 PPG  
+Sam LaPorta: 8.578139327762146 PPG  
+Brock Bowers: 8.508961790752961 PPG  
+Noah Fant: 8.30953427793734 PPG  
+  
+Wide Receiver Predictions:  
+Ja'Marr Chase: 15.61606787509382 PPG  
+Justin Jefferson: 14.305965769807607 PPG  
+Rashee Rice: 13.8560993567225 PPG  
+Drake London: 13.246964187667247 PPG  
+Malik Nabers: 13.21485503917946 PPG  
+Davante Adams: 13.192591969457288 PPG  
+A.J. Brown: 13.188139542801343 PPG  
+Puka Nacua: 13.126063121869903 PPG  
+Nico Collins: 13.02342936955149 PPG  
+Chris Godwin: 13.021341821847516 PPG  
