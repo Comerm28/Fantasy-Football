@@ -1,7 +1,7 @@
 # Fantasy-Football
 Im winning this year
 
-##Current Rankings:  
+# Current Rankings:  
   
 Quarterback Predictions:  
 Lamar Jackson: 22.744657613189936 PPG  
