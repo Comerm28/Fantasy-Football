@@ -22,12 +22,21 @@ scaler = MinMaxScaler()
 # feature engineering
 training_data['targets_per'] = training_data['targets'] / training_data['G'].replace(0, 1)
 training_data['td_to_catch'] = training_data['rec_touchdowns'] / training_data['Touches'].replace(0, 1)
+training_data['targets_per_game'] = training_data['targets'] / training_data['G'].replace(0, 1)
+td_scale, rec_scale, yds_scale = 6, 1.4, 0.1
+training_data['playstyle_adj_share_yards'] = training_data['percent_share_of_intended_air_yards'] + (training_data['Rec_TD_per_game'].replace(0, 1) * 5)
+training_data['playstyle_adj_performance'] = (training_data['Rec_Yds_per_game'] * yds_scale) + (training_data['Rec_TD_per_game'] * td_scale) + (training_data['targets_per_game'] * rec_scale)
+training_data['avg_separation_per_rec'] = training_data['avg_separation'] * training_data['Rec_Rec_per_game'].replace(0, 1)
+training_data['yac_attack'] = (training_data['avg_yac_above_expectation'] + training_data['Rec_TD_per_game']) * training_data['Rec_Rec_per_game'].replace(0, 1)
+training_data['y/r_rec_td'] = training_data['Rec_Y/R'] + (training_data['Rec_TD_per_game'].replace(0, 1) * training_data['Rec_Rec_per_game'].replace(0, 1))
+
 print(f"Number of players with at least 50% games started: {len(training_data)}")
 
 # percent_share_of_intended_air_yards,receptions,targets,avg_expected_yac,avg_yac_above_expectation
-X = training_data[['catch_percentage', 'Rec_Rec_per_game', 'targets_per', 
-                   'avg_yac_above_expectation', 'percent_share_of_intended_air_yards',
-                   'td_to_catch', 'avg_separation', 'avg_cushion']]
+X = training_data[['targets_per', 'percent_share_of_intended_air_yards',
+                   'td_to_catch', 'avg_separation', 'avg_cushion',
+                   'playstyle_adj_share_yards', 'playstyle_adj_performance',
+                   'avg_separation_per_rec', 'yac_attack', 'y/r_rec_td']]
 # X = scaler.fit_transform(X)
 y = training_data['next_year_PPG_half-ppr']
 

@@ -10,6 +10,12 @@ qb_input = qb_input[qb_input['GS'] / qb_input['G'] >= .5]
 
 te_input = pd.read_csv('premodel_data/te_input.csv')
 te_input['targets_per_game'] = te_input['targets'] / te_input['G'].replace(0, 1)
+td_scale, rec_scale, yds_scale = 6, 1.4, 0.1
+te_input['playstyle_adj_share_yards'] = te_input['percent_share_of_intended_air_yards'] + (te_input['Rec_TD_per_game'].replace(0, 1) * 5)
+te_input['playstyle_adj_performance'] = (te_input['Rec_Yds_per_game'] * yds_scale) + (te_input['Rec_TD_per_game'] * td_scale) + (te_input['targets_per_game'] * rec_scale)
+te_input['avg_separation_per_rec'] = te_input['avg_separation'] * te_input['Rec_Rec_per_game'].replace(0, 1)
+te_input['yac_attack'] = (te_input['avg_yac_above_expectation'] + te_input['Rec_TD_per_game']) * te_input['Rec_Rec_per_game'].replace(0, 1)
+te_input['y/r_rec_td'] = te_input['Rec_Y/R'] + (te_input['Rec_TD_per_game'].replace(0, 1) * te_input['Rec_Rec_per_game'].replace(0, 1))
 
 rb_input = pd.read_csv('premodel_data/rb_input.csv')
 rb_input = rb_input[rb_input['rush_yards_over_expected_per_att'].notna()]
@@ -23,6 +29,14 @@ rb_input['wear_and_tear'] = (rb_input['Age'] * rb_input['Touches'].replace(0, 1)
 wr_input = pd.read_csv('premodel_data/wr_input.csv')
 wr_input['targets_per'] = wr_input['targets'] / wr_input['G'].replace(0, 1)
 wr_input['td_to_catch'] = wr_input['rec_touchdowns'] / wr_input['Touches'].replace(0, 1)
+wr_input['targets_per_game'] = wr_input['targets'] / wr_input['G'].replace(0, 1)
+td_scale, rec_scale, yds_scale = 6, 1.4, 0.1
+wr_input['playstyle_adj_share_yards'] = wr_input['percent_share_of_intended_air_yards'] + (wr_input['Rec_TD_per_game'].replace(0, 1) * 5)
+wr_input['playstyle_adj_performance'] = (wr_input['Rec_Yds_per_game'] * yds_scale) + (wr_input['Rec_TD_per_game'] * td_scale) + (wr_input['targets_per_game'] * rec_scale)
+wr_input['avg_separation_per_rec'] = wr_input['avg_separation'] * wr_input['Rec_Rec_per_game'].replace(0, 1)
+wr_input['yac_attack'] = (wr_input['avg_yac_above_expectation'] + wr_input['Rec_TD_per_game']) * wr_input['Rec_Rec_per_game'].replace(0, 1)
+wr_input['y/r_rec_td'] = wr_input['Rec_Y/R'] + (wr_input['Rec_TD_per_game'].replace(0, 1) * wr_input['Rec_Rec_per_game'].replace(0, 1))
+
 wr_input = wr_input.dropna()
 print(f"Number of qbs: {len(qb_input)}")
 print(f"Number of tes: {len(te_input)}")
@@ -61,9 +75,8 @@ for index, row in rb_input.iterrows():
     })
 
 
-te_rows = ['Age', 'avg_cushion', 'targets_per_game', 'Rec_Yds_per_game',
-                   'avg_separation','percent_share_of_intended_air_yards',
-                   'Rec_TD_per_game', 'catch_percentage', 'avg_yac_above_expectation']
+te_rows = ['playstyle_adj_share_yards', 'playstyle_adj_performance', 'avg_separation_per_rec',
+            'yac_attack', 'y/r_rec_td', 'avg_cushion']
 for index, row in te_input.iterrows():
     prediction = te_model.predict([row[te_rows]])[0]
     te_list.append({
@@ -71,9 +84,10 @@ for index, row in te_input.iterrows():
         'Predicted_PPG': prediction
     })
 
-wr_rows = ['catch_percentage', 'Rec_Rec_per_game', 'targets_per', 
-                   'avg_yac_above_expectation', 'percent_share_of_intended_air_yards',
-                   'td_to_catch', 'avg_separation', 'avg_cushion']
+wr_rows = ['targets_per', 'percent_share_of_intended_air_yards',
+                   'td_to_catch', 'avg_separation', 'avg_cushion',
+                   'playstyle_adj_share_yards', 'playstyle_adj_performance',
+                   'avg_separation_per_rec', 'yac_attack', 'y/r_rec_td']
 for index, row in wr_input.iterrows():
     prediction = wr_model.predict([row[wr_rows]])[0]
     wr_list.append({

@@ -17,12 +17,17 @@ scaler = MinMaxScaler()
 
 # feature engineering
 training_data['targets_per_game'] = training_data['targets'] / training_data['G'].replace(0, 1)
-print(f"Number of players with at least 50% games started: {len(training_data)}")
+td_scale, rec_scale, yds_scale = 6, 1.4, 0.1
+training_data['playstyle_adj_share_yards'] = training_data['percent_share_of_intended_air_yards'] + (training_data['Rec_TD_per_game'].replace(0, 1) * 5)
+training_data['playstyle_adj_performance'] = (training_data['Rec_Yds_per_game'] * yds_scale) + (training_data['Rec_TD_per_game'] * td_scale) + (training_data['targets_per_game'] * rec_scale)
+training_data['avg_separation_per_rec'] = training_data['avg_separation'] * training_data['Rec_Rec_per_game'].replace(0, 1)
+training_data['yac_attack'] = (training_data['avg_yac_above_expectation'] + training_data['Rec_TD_per_game']) * training_data['Rec_Rec_per_game'].replace(0, 1)
+training_data['y/r_rec_td'] = training_data['Rec_Y/R'] + (training_data['Rec_TD_per_game'].replace(0, 1) * training_data['Rec_Rec_per_game'].replace(0, 1))
 
+print(f"Number of rows: {len(training_data)}")
 
-X = training_data[['Age', 'avg_cushion', 'targets_per_game', 'Rec_Yds_per_game',
-                   'avg_separation','percent_share_of_intended_air_yards',
-                   'Rec_TD_per_game', 'catch_percentage', 'avg_yac_above_expectation']]
+X = training_data[['playstyle_adj_share_yards', 'playstyle_adj_performance', 'avg_separation_per_rec',
+                   'yac_attack', 'y/r_rec_td', 'avg_cushion']]
 # X = scaler.fit_transform(X)
 y = training_data['next_year_PPG_half-ppr']
 
@@ -32,33 +37,31 @@ y = training_data['next_year_PPG_half-ppr']
 # poly_df = pd.DataFrame(poly_features, columns=['Age', 'Age^2'])
 # X = pd.concat([X.drop(columns=['Age']), poly_df], axis=1)
 
-#hyper parameter tuning
-# from sklearn.model_selection import GridSearchCV
-
-# param_grid = {
-#     'n_estimators': [50, 100, 200],
-#     'learning_rate': [0.01, 0.1, 0.2],
-#     'max_depth': [3, 5, 10],
-#     'min_samples_split': [2, 5, 10],
-#     'min_samples_leaf': [1, 2, 4]
-# }
-
-# grid_search = GridSearchCV(GradientBoostingRegressor(random_state=42), param_grid, cv=5, scoring='r2')
-# grid_search.fit(X_train, y_train)
-
-# best_model = grid_search.best_estimator_
-# print("Best Parameters:", grid_search.best_params_)
-
 #model selection
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-# model = LinearRegression(), try thielsenregressor
-model = GradientBoostingRegressor(n_estimators=20, learning_rate=0.1, max_depth=6, min_samples_split=10, min_samples_leaf=8, subsample=1.0, random_state=42)
+
+#hyper parameter tuning
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {
+    'n_estimators': [30],
+    'learning_rate': [0.05],
+    'max_depth': [2, 3, 4, 5, 6, 7, 8],
+}
+
+grid_search = GridSearchCV(GradientBoostingRegressor(random_state=42), param_grid, cv=3, scoring='r2', n_jobs=-1)
+grid_search.fit(X_train, y_train)
+best_model = grid_search.best_estimator_
+print("Best Parameters:", grid_search.best_params_)
+
+# model = LinearRegression()
+model = GradientBoostingRegressor(n_estimators=30, learning_rate=0.05, max_depth=3, min_samples_split=2, min_samples_leaf=2, subsample=1.0, random_state=42)
 # model = VotingRegressor(estimators=[
 #     ('rf', RandomForestRegressor(n_estimators=100, random_state=42)),
 #     ('gb', GradientBoostingRegressor(n_estimators=100, random_state=42)),
 #     ('ts', TheilSenRegressor())
 # ])
-# model = RandomForestRegressor(n_estimators=100, max_depth=4, min_samples_split=10, max_features='sqrt', random_state=42)
+# model = RandomForestRegressor(n_estimators=10, max_depth=4, min_samples_split=3, max_features='sqrt', random_state=42)
 # model = TheilSenRegressor(n_jobs=-1)
 model.fit(X_train, y_train)
 
